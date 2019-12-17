@@ -743,6 +743,7 @@ BEGIN
     IF @PackageID <> @SourceID
        AND @SourceName <> 'SQL LogPackageStart'
        AND @SourceName <> 'SQL LogPackageEnd'
+	   AND @SourceName <> 'Check Variables'
     BEGIN
         INSERT INTO [dbo].[PackageTaskLog]
         (
