@@ -12,10 +12,11 @@ SELECT p.PackageName,
        [Duration] = ISNULL(
                               DATEADD(ss, DATEDIFF(ss, ptl.StartDateTime, ptl.EndDateTime), CAST('00:00:00' AS TIME(0))),
                               CAST('00:00:00' AS TIME(0))
-                          ),
-		pvl.VariableName,
-		pvl.VariableValue
+                          )
+						  ,dbo.PackageErrorLog.SourceName
+						  ,dbo.PackageErrorLog.ErrorDescription
 FROM dbo.PackageLog pl
+LEFT JOIN dbo.PackageErrorLog ON PackageErrorLog.PackageLogID = pl.PackageLogID
 LEFT JOIN dbo.PackageVariableLog pvl ON Pvl.PackageLogID = pl.PackageLogID
     INNER JOIN F1
         ON F1.BatchLogID = pl.BatchLogID
@@ -28,6 +29,8 @@ LEFT JOIN dbo.PackageVariableLog pvl ON Pvl.PackageLogID = pl.PackageLogID
 	
 ORDER BY ptl.StartDateTime ASC;
 
-SELECT * FROM dbo.PackageVariableLog pvl
+SELECT pvl.VariableName,pvl.VariableValue FROM dbo.PackageVariableLog pvl
 INNER JOIN dbo.PackageLog pl ON pl.PackageLogID = pvl.PackageLogID
+WHERE batchlogid = (SELECT MAX(BatchLogID) FROM dbo.BatchLog)
 
+SELECT * FROM dbo.PackageErrorLog
